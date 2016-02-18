@@ -99,6 +99,10 @@ var CURRENT_NETWORK_VERSION = function(val) {
     return 0x60000000 | val;
 };
 
+function fixPrivateKey(privatekey) {
+	return ("0000000000000000000000000000000000000000000000000000000000000000" + privatekey.replace(/^00/, '')).slice(-64);
+}
+
 function sendAjaxRequest(senderPubKey,senderPrivKey,rcptAddr, options){
     var o = _.defaults(options, {message: ""}, {amount: 100})
     var amount = parseInt(o.amount, 10);
@@ -130,7 +134,7 @@ function sendAjaxRequest(senderPubKey,senderPrivKey,rcptAddr, options){
     
     var entity = $.extend(data, custom);
     var result = serializeTransferTransaction(entity);
-    var kp = KeyPair.create(senderPrivKey);  
+    var kp = KeyPair.create(fixPrivateKey(senderPrivKey));  
     var signature = kp.sign(result);
     var obj = {'data':ua2hex(result), 'signature':signature.toString()};
     console.log(entity);
